@@ -25,24 +25,34 @@ def Report(TF):
         f'https://solanaapi.nftscan.com/api/sol/statistics/ranking/trade?time={TF}&sort_field=volume&sort_direction=desc',
         headers={'X-API-KEY': 'UpHv9E2zqy9TValq6VhoRUXd'})
         # headers={'X-API-KEY': 'oWZhEOcSOYEopEpLnHGYzx9I'})
+    data = json.loads(response.text)['data']
+    print(f"Nombre d'éléments reçus de l'API: {len(data)}")
 
-    print(response.text)
-    for i in json.loads(response.text)['data']:
-        if i['floor_price'] is not None and i["contract_name"] is not None and i['volume'] is not None:
-            List = []
-            List.append(Ranking[C])
-            List.append(f'{i["contract_name"][0:20]}')
-            List.append(i['sales'])
-            List.append(round(i['volume'], 2))
-            List.append(round(i['lowest_price'], 2))
+    for i in data:
+        floor_price = i.get('lowest_price')
+        contract_name = i.get("collection")
+        volume = i.get('volume')
+        print(f"Traitement de la collection: {i.get('collection')}")
+        print(f"floor_price: {floor_price}, contract_name: {contract_name}, volume: {volume}")
+
+        if contract_name and volume is not None:  # Modification de la condition ici
+            List = [Ranking[C], contract_name[:20], i.get('sales'), round(volume, 2)]
+
+            List.append(round(floor_price, 2) if floor_price is not None else 'N/A')
             List.append(round(i['highest_price'], 2))
+
             C += 1
             Main.append(List)
+            
             if C == 10:
-                ModifiedMain = Main
-                Columns = ["#", "Collection", "Sold", "Volume", "Low", "High"]
-                Table = (tabulate(ModifiedMain, headers=Columns, numalign="center", stralign="left"))
-                return Table
+                break
+    
+    if Main:
+        Columns = ["#", "Collection", "Sold", "Volume", "Low", "High"]
+        Table = tabulate(Main, headers=Columns, numalign="center", stralign="left")
+        return Table
+    else:
+        return "Aucune donnée disponible."
 
 @client.event
 async def on_ready():
