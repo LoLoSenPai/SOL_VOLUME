@@ -41,8 +41,10 @@ def Report(TF):
             List.append(round(floor_price, 2) if floor_price is not None else 'N/A')
             List.append(round(i['highest_price'], 2))
 
+
             C += 1
             Main.append(List)
+            
             
             if C == 10:
                 break
