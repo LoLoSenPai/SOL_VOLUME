@@ -11,9 +11,9 @@ client = discord.Bot(intents=discord.Intents.default())
 
 Black, Purple, Blue, Green, Yellow, Red, Orange, SolCol = 0x00000, 0xA020F0, 0x0000FF, 0x00FF00, 0xFFFF33, 0xFF0000, 0xFFA500, 0x03E1FF
 
-Footer = 'Powered by LoLo Labs'
-ImageURL = 'https://iili.io/HPgfNmF.png'
-FooterImg = 'https://iili.io/HPgfWgV.png'
+Footer = 'Powered by Pyro'
+ImageURL = 'https://pyro-nft.vercel.app/logo-pyro.png'
+FooterImg = 'https://pyro-nft.vercel.app/logo-pyro.png'
 AuthorName = 'Solana Volume'
 
 def Report(TF):
@@ -25,24 +25,34 @@ def Report(TF):
         f'https://solanaapi.nftscan.com/api/sol/statistics/ranking/trade?time={TF}&sort_field=volume&sort_direction=desc',
         headers={'X-API-KEY': 'UpHv9E2zqy9TValq6VhoRUXd'})
         # headers={'X-API-KEY': 'oWZhEOcSOYEopEpLnHGYzx9I'})
+    data = json.loads(response.text)['data']
+    print(f"Number of elements from API: {len(data)}")
 
-    print(response.text)
-    for i in json.loads(response.text)['data']:
-        if i['floor_price'] is not None and i["contract_name"] is not None and i['volume'] is not None:
-            List = []
-            List.append(Ranking[C])
-            List.append(f'{i["contract_name"][0:20]}')
-            List.append(i['sales'])
-            List.append(round(i['volume'], 2))
-            List.append(round(i['lowest_price'], 2))
+    for i in data:
+        floor_price = i.get('lowest_price')
+        contract_name = i.get("collection")
+        volume = i.get('volume')
+        print(f"Checking for collection: {i.get('collection')}")
+        print(f"floor_price: {floor_price}, contract_name: {contract_name}, volume: {volume}")
+
+        if contract_name and volume is not None:  # Modification de la condition ici
+            List = [Ranking[C], contract_name[:20], i.get('sales'), round(volume, 2)]
+
+            List.append(round(floor_price, 2) if floor_price is not None else 'N/A')
             List.append(round(i['highest_price'], 2))
+
             C += 1
             Main.append(List)
+            
             if C == 10:
-                ModifiedMain = Main
-                Columns = ["#", "Collection", "Sold", "Volume", "Low", "High"]
-                Table = (tabulate(ModifiedMain, headers=Columns, numalign="center", stralign="left"))
-                return Table
+                break
+    
+    if Main:
+        Columns = ["#", "Collection", "Sold", "Volume", "Low", "High"]
+        Table = tabulate(Main, headers=Columns, numalign="center", stralign="left")
+        return Table
+    else:
+        return "No data available."
 
 @client.event
 async def on_ready():
@@ -60,7 +70,7 @@ async def Market15m():
     SalesVol.set_footer(text=Footer, icon_url=FooterImg)
 
     try:
-        Channel = await client.fetch_channel(1188211884357337208)
+        Channel = await client.fetch_channel(1191440716568739931)
         await Channel.send(embed=SalesVol)
     except:
         pass
@@ -73,7 +83,7 @@ async def Market30m():
     SalesVol.set_footer(text=Footer, icon_url=FooterImg)
 
     try:
-        Channel = await client.fetch_channel(1188213151695638598)
+        Channel = await client.fetch_channel(1191442846398558278)
         await Channel.send(embed=SalesVol)
     except:
         pass
@@ -86,7 +96,7 @@ async def Market1hr():
     SalesVol.set_footer(text=Footer, icon_url=FooterImg)
 
     try:
-        Channel = await client.fetch_channel(1188213281446449292)
+        Channel = await client.fetch_channel(1191442883950149722)
         await Channel.send(embed=SalesVol)
     except:
         pass
@@ -102,7 +112,7 @@ async def Market1d():
         SalesVol.set_footer(text=Footer, icon_url=FooterImg)
 
         try:
-            Channel = await client.fetch_channel(1188213321447522436)
+            Channel = await client.fetch_channel(1191455785939632139)
             await Channel.send(embed=SalesVol)
         except:
             pass
