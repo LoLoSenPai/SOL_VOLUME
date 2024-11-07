@@ -5,7 +5,7 @@ from discord.ext import tasks
 from tabulate import tabulate
 import json
 
-Token = 'MTE4ODIxMjAzMjM1NzUzOTg1MQ.GEgoDJ.fqmD-9bvpU0mfKsXYYUy9O3oIhArZ9nP2Gn5UI'
+Token = 'MTE4ODIxMjAzMjM1NzUzOTg1MQ.GEgoDJ.fqmD-9bvpU0mfKsXYYUy9O3oIhArZ9nP2Gn5UI' //Test token
 
 client = discord.Bot(intents=discord.Intents.default())
 
